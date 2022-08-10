@@ -24,11 +24,31 @@ class Seller(models.Model):
     class Meta:
         ordering = ['-seller_registered_at']
 
+class Category(models.Model):
+    category_name = models.CharField(max_length=50,unique=True)
+    category_image = models.ImageField(validators=[validate_image_file_extension],null=True,blank=True)
+
+    def __str__(self):
+        return self.category_name
+
+    class Meta:
+        verbose_name_plural  = 'Category'
+
+class Coupon(models.Model):
+    product = models.ForeignKey(related_name="Product",on_delete=models.CASCADE)
+    code = models.CharField(max_length=15)
+    amount = models.FloatField()
+
+    def __str__(self):
+        return self.code
+
 class Product(models.Model):
     product_name = models.CharField(max_length=60)
+    product_category = models.ManyToManyField(Category)
     product_image = models.ImageField(upload_to='product_images',validators=[validate_image_file_extension])
-    price = models.PositiveIntegerField()
-    offer_price = models.PositiveIntegerField()
+    price = models.FloatField()
+    offer_price = models.FloatField()
+    coupon = models.ForeignKey(Coupon,on_delete=models.CASCADE,null=True,blank=True)
     size = models.CharField(max_length=60)
     material_type = models.CharField(max_length=60)
     description = models.TextField()
@@ -48,25 +68,3 @@ class Product(models.Model):
 
     class Meta:
         ordering = ['-product_seller','-product_published_at']
-
-Rating_CHOICES = (
-    (1, 'Poor'),
-    (2, 'Average'),
-    (3, 'Good'),
-    (4, 'Very Good'),
-    (5, 'Excellent')
-)
-
-class ProductReview(models.Model):
-    product_reviewed = models.ForeignKey(Product,on_delete=models.CASCADE) 
-    author = models.ForeignKey(User,on_delete=models.CASCADE)
-    rating = models.PositiveIntegerField(choices=Rating_CHOICES,default=1)
-    message = models.CharField(max_length=150,default='No Message')
-    reviewed_at =  models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"({self.product_reviewed}) - {self.author}"
-
-    class Meta:
-        ordering = ['-reviewed_at']
-

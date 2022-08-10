@@ -2,6 +2,7 @@ from django.test import TestCase
 from seller.models import Seller,Product
 from django.contrib.auth.models import User
 from customer.models import Order
+from seller.models import Category
 
 class TestSellerModels(TestCase):
     def setUp(self):
@@ -9,11 +10,12 @@ class TestSellerModels(TestCase):
         self.seller = Seller.objects.create(
             shop_name='A2 Styles',seller_name='Piyush Jain',seller_user=self.user,
             shop_is_registered=True,seller_ID_method="PAN Card",seller_ID='WRW2VDFWRQ',
-            shop_address ='Civil Line')
+            shop_address ='Civil Line',phone_no ='8349811004')
+        self.category = Category.objects.create(category_name='Jeans')
         #⚡⚡⚡
 
         self.product = Product.objects.create(
-            product_name='xyz',product_image='xyz.jpeg',price=100,offer_price=80,size='220C',
+            product_name='xyz',product_category=self.category,product_image='xyz.jpeg',price=100,offer_price=80,size='220C',
             material_type='100% COTTON',description='desc',generic_name='UH',fit_type='xyz',
             material_composition='efhj',quantity=3,product_seller=self.user.seller
         )
